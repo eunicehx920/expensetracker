@@ -57,7 +57,7 @@ class gmailService:
         """
         results = self.service.users().messages().list(userId='me', labelIds=label_id).execute()
         messages = []
-        logger.info("Retrieving messages with label id: %s...".format(label_id))
+        logger.info("Retrieving messages with label id: {label_id}...".format(label_id=label_id))
         while results:
             for msg in results.get('messages'):
                 msg_id = msg.get('id')
@@ -67,7 +67,7 @@ class gmailService:
                 results = self.service.users().messages().list(userId='me', labelIds=label_id, pageToken=next_page)
             else:
                 results = None
-        logger.info("%s messages retrieved".format(len(messages)))
+        logger.info("{len_msgs} messages retrieved".format(len_msgs=len(messages)))
         return messages
 
 

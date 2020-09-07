@@ -1,8 +1,13 @@
 from venmo_email_parser import Venmo_Email_Processor
 from gmail import gmailService, Message, ListOfMessages
 from processor import Processor
+import sys
+import logging
 
 from typing import List
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger()
 
 Vector = List[float]
 
@@ -18,7 +23,7 @@ def main(label: str, processor: Processor):
     return
 
 def upload_to_database(list_of_messages: ListOfMessages):
-    print(list_of_messages)
+    pass
 
 if __name__ == '__main__':
     main(LABEL_TO_READ_VENMO, Venmo_Email_Processor)
