@@ -1,4 +1,4 @@
-from google_services import get_gmail_service
+from utils.google_services import get_gmail_service
 import logging
 import sys
 from typing import List, Dict
@@ -11,7 +11,8 @@ ListOfMessageContent = List[MessageContent]
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger()
 
-class gmailService:
+class gmailService: 
+
     def __init__(self):
         self.service = get_gmail_service()
 
@@ -27,7 +28,6 @@ class gmailService:
             ValueError: If no such label is found
 
         """
-
         results = self.service.users().labels().list(userId='me').execute()
         labels = results.get('labels', [])
         if not labels:
@@ -45,7 +45,7 @@ class gmailService:
         return label_id_to_read
 
 
-    def get_messages(self, label_id: str) -> ListOfMessages:
+    def get_messages(self, label_name: str) -> ListOfMessages:
         """Gets list of messages given label id
 
             Args:
@@ -55,9 +55,10 @@ class gmailService:
             Raises:
             ValueError: If no such label is found
         """
+        label_id = self.get_label_id(label_name)
         results = self.service.users().messages().list(userId='me', labelIds=label_id).execute()
         messages = []
-        logger.info("Retrieving messages with label id: {label_id}...".format(label_id=label_id))
+        logger.info("Retrieving messages with label {label_name}...".format(label_name=label_name))
         while results:
             for msg in results.get('messages'):
                 msg_id = msg.get('id')
@@ -70,8 +71,34 @@ class gmailService:
         logger.info("{len_msgs} messages retrieved".format(len_msgs=len(messages)))
         return messages
 
+    def modify_message_label(self, labels_to_add: List, labels_to_delete: List, message_id: str, convert_to_label_id: bool) -> Dict:
+        """
+            Modifies the labels of a message
 
+            Args:
+                label_name: full name of label. If label has a parent label, the full name is <parent_label>/<label>
+            Returns:
+                None
+            Raises:
+            ValueError: If no such label is found
 
-if __name__ == '__main__':
-    label_id = get_label_id(LABEL_TO_READ)
-    get_messages(label_id)
+        """
+        if convert_to_label_id:
+            add_label_ids = []
+            remove_label_ids = []
+            for label_a in labels_to_add:
+                add_label_ids.append(self.get_label_id(label_a))
+            for label_d in labels_to_delete:
+                remove_label_ids.append(self.get_label_id(label_d)) 
+        else:
+            add_label_ids = labels_to_add
+            remove_label_ids = labels_to_delete
+
+        request_body = {
+            "addLabelIds" : add_label_ids,
+            "removeLabelIds" : remove_label_ids
+        }
+        
+        results = self.service.users().messages().modify(userId='me', id=message_id, body=request_body).execute()
+                    
+        return
