@@ -59,7 +59,7 @@ class Venmo_Email_Parser(Parser):
     # Fang Shuo Deng charged You Towels Transfer Date and Amount: Jun 06, 2020 PDT · - $4.46 Like Comment Completed via your Venmo balance. Payment ID: 3025969980949660524 Invite Friends! For any issues,
     # Lim Mingjun charged You Lyft from SF Transfer Date and Amount: Jun 06, 2020 PDT · - $31.00 Like Comment Completed via a bank transfer from your Bank Of
     #  """
-        regex_pattern_main = "^(.*) charged You (.*) Transfer Date and Amount: (.*) PDT · - \$(.*) Like Comment Completed via (.*)"
+        regex_pattern_main = "^(.*) charged You (.*) Transfer Date and Amount: (.*) P[SD]T · - \$(.*) Like Comment Completed via (.*)"
         m = re.search(regex_pattern_main, email_snippet)
         return (m)
 
